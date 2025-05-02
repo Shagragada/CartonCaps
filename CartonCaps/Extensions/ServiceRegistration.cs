@@ -13,5 +13,6 @@ public static class ServiceRegistration
         services.AddHttpContextAccessor();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IReferralService, ReferralService>();
     }
 }
