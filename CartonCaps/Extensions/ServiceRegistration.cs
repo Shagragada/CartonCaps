@@ -1,3 +1,6 @@
+using CartonCaps.IServices;
+using CartonCaps.Services;
+
 namespace CartonCaps.Extensions;
 
 public static class ServiceRegistration
@@ -8,5 +11,7 @@ public static class ServiceRegistration
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddHttpContextAccessor();
+
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
     }
 }
