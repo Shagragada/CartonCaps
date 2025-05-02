@@ -1,0 +1,10 @@
+namespace CartonCaps.MessageTemplate;
+
+public static class SmsTemplate
+{
+    public static SharedMessageTemplate Create(string downloadUrl) =>
+        new(
+            subject: null,
+            body: $@"Hi, Join me in earning money for our school by using the Carton Caps app. It's an easy way to make a difference. Use the link below to download the Carton Caps app: {downloadUrl}"
+        );
+}
