@@ -59,9 +59,8 @@ public class ReferralService : IReferralService
             var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
 
             if (user == null)
-            {
                 return Result<User>.Error("Invalid referral code.");
-            }
+
             return Result<User>.Success(user);
         }
         catch (Exception e)

@@ -9,30 +9,38 @@ namespace CartonCaps.Services;
 
 public class SharedLinkService : ISharedLinkService
 {
-    private readonly ICurrentUserService _currentUserService;
     private readonly IMockData _mockData;
     private readonly ILogger<SharedLinkService> _logger;
+    private readonly IReferralService _referralService;
 
     public SharedLinkService(
-        ICurrentUserService currentUserService,
         IMockData mockData,
-        ILogger<SharedLinkService> logger
+        ILogger<SharedLinkService> logger,
+        IReferralService referralService
     )
     {
-        _currentUserService = currentUserService;
         _mockData = mockData;
         _logger = logger;
+        _referralService = referralService;
     }
 
-    public Result<SharedLinkResponse> GenerateSharedLink(string baseUrl)
+    public Result<SharedLinkResponse> GenerateSharedLink(string baseUrl, string referralCode)
     {
         try
         {
+            // Check for empty base Url
             if (string.IsNullOrWhiteSpace(baseUrl))
-            {
                 return Result<SharedLinkResponse>.Error("Base URL is required.");
-            }
-            var referralCode = _currentUserService.ReferralCode;
+
+            // Check for empty referral code
+            if (string.IsNullOrWhiteSpace(referralCode))
+                return Result<SharedLinkResponse>.Error("Referral code is required.");
+
+            // Check referral code validity
+            var validationResult = _referralService.ValidateReferralCode(referralCode);
+            if (!validationResult.IsSuccess)
+                return Result<SharedLinkResponse>.Error("Invalid referral code.");
+
             var referralLink = $"{baseUrl}?referral_code={referralCode}";
 
             var smsMessage = new Sms(referralLink);
@@ -44,11 +52,7 @@ public class SharedLinkService : ISharedLinkService
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Error generating shared link for user {UserId}.",
-                _currentUserService.UserId
-            );
+            _logger.LogError(e, "Error generating shared link.");
             return Result<SharedLinkResponse>.Error(
                 "An error occurred while generating the shared link."
             );
@@ -74,12 +78,7 @@ public class SharedLinkService : ISharedLinkService
         }
         catch (Exception e)
         {
-            _logger.LogError(
-                e,
-                "Error validating shared link {ReferralLink} for user {UserId}.",
-                referralLink,
-                _currentUserService.UserId
-            );
+            _logger.LogError(e, "Error validating shared link {ReferralLink}.", referralLink);
             return Result<bool>.Error("An error occurred while validating the shared link.");
         }
     }
