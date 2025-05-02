@@ -43,6 +43,7 @@ public class SharedLinkService : ISharedLinkService
 
             var referralLink = $"{baseUrl}?referral_code={referralCode}";
 
+            // Create SMS and Email messages with the referral link
             var smsMessage = new Sms(referralLink);
             var emailMessage = new Email(referralLink);
 
@@ -59,19 +60,24 @@ public class SharedLinkService : ISharedLinkService
         }
     }
 
+    //Todo: Update this method to return a complex type
     public Result<bool> ValidateSharedLink(string referralLink)
     {
         try
         {
+            // Check for empty referral link
             if (string.IsNullOrWhiteSpace(referralLink))
                 return Result<bool>.Error("Referral link is required.");
 
+            // Parse the referral link to extract the referral code
             var uri = new Uri(referralLink);
             var query = HttpUtility.ParseQueryString(uri.Query);
             var referralCode = query.Get("referral_code");
 
             if (string.IsNullOrWhiteSpace(referralCode))
                 return false;
+
+            // Check if the referral code is associated with a user
             var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
 
             return user != null;

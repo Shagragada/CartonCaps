@@ -26,9 +26,11 @@ public class ReferralService : IReferralService
     {
         try
         {
+            // Fetch referrals and users from mock data
             var referrals = _mockData.GetReferrals();
             var users = _mockData.GetUsers();
 
+            // Gets referrals for the specified user
             var result =
                 from referral in referrals
                 where referral.ReferrerId == userId
@@ -39,6 +41,7 @@ public class ReferralService : IReferralService
                     referral.Status,
                     referral.CompletedDate
                 );
+
             return Result<IEnumerable<GetReferralResponse>>.Success(result);
         }
         catch (Exception e)
@@ -54,8 +57,11 @@ public class ReferralService : IReferralService
     {
         try
         {
+            // Check for empty referral code
             if (string.IsNullOrWhiteSpace(referralCode))
                 return Result<User>.Error("Referral code is required.");
+
+            // Get user with the given referral code
             var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
 
             if (user == null)
