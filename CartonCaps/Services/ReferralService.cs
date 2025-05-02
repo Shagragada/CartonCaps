@@ -1,4 +1,4 @@
-using CartonCaps.Data;
+using Ardalis.Result;
 using CartonCaps.Dtos;
 using CartonCaps.IData;
 using CartonCaps.IServices;
@@ -9,10 +9,12 @@ namespace CartonCaps.Services;
 public class ReferralService : IReferralService
 {
     private readonly IMockData _mockData;
+    private readonly Logger<ReferralService> _logger;
 
-    public ReferralService(IMockData mockData)
+    public ReferralService(IMockData mockData, Logger<ReferralService> logger)
     {
         _mockData = mockData;
+        _logger = logger;
     }
 
     public GetReferralResponse CreateReferral(int userId)
@@ -20,29 +22,52 @@ public class ReferralService : IReferralService
         throw new NotImplementedException();
     }
 
-    public IEnumerable<GetReferralResponse> GetReferrals(int userId)
+    public Result<IEnumerable<GetReferralResponse>> GetReferrals(int userId)
     {
-        var referrals = _mockData.GetReferrals();
-        var users = _mockData.GetUsers();
+        try
+        {
+            var referrals = _mockData.GetReferrals();
+            var users = _mockData.GetUsers();
 
-        var result =
-            from referral in referrals
-            where referral.ReferrerId == userId
-            join referredUser in users on referral.ReferredId equals referredUser.Id
-            select new GetReferralResponse(
-                referral.Id,
-                $"{referredUser.FirstName} {referredUser.LastName.FirstOrDefault()}.",
-                referral.Status,
-                referral.CompletedDate
+            var result =
+                from referral in referrals
+                where referral.ReferrerId == userId
+                join referredUser in users on referral.ReferredId equals referredUser.Id
+                select new GetReferralResponse(
+                    referral.Id,
+                    $"{referredUser.FirstName} {referredUser.LastName.FirstOrDefault()}.",
+                    referral.Status,
+                    referral.CompletedDate
+                );
+            return Result<IEnumerable<GetReferralResponse>>.Success(result);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error retrieving referrals for user {UserId}", userId);
+            return Result<IEnumerable<GetReferralResponse>>.Error(
+                "An error occurred while retrieving referrals."
             );
-        return result;
+        }
     }
 
-    public User? ValidateReferralCode(string referralCode)
+    public Result<User> ValidateReferralCode(string referralCode)
     {
-        if (string.IsNullOrWhiteSpace(referralCode))
-            return null;
-        var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
-        return user;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(referralCode))
+                return Result<User>.Error("Referral code is required.");
+            var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
+
+            if (user == null)
+            {
+                return Result<User>.Error("Invalid referral code.");
+            }
+            return Result<User>.Success(user);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error validating referral code {ReferralCode}", referralCode);
+            return Result<User>.Error("An error occurred while validating the referral code.");
+        }
     }
 }

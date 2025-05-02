@@ -1,9 +1,10 @@
+using Ardalis.Result;
 using CartonCaps.Dtos;
 
 namespace CartonCaps.IServices;
 
 public interface ISharedLinkService
 {
-    SharedLinkResponse GenerateSharedLink(string baseUrl);
-    bool ValidateSharedLink(string token);
+    Result<SharedLinkResponse> GenerateSharedLink(string baseUrl);
+    Result<bool> ValidateSharedLink(string token);
 }
