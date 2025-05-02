@@ -34,13 +34,4 @@ public class CurrentUserService : ICurrentUserService
             return referralCodeClaim?.Value;
         }
     }
-
-    public string? FirstName
-    {
-        get
-        {
-            var firstNameClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("FirstName");
-            return firstNameClaim?.Value;
-        }
-    }
 }

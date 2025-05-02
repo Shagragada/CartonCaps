@@ -7,7 +7,4 @@ public interface ICurrentUserService
 
     // Gets the current user's referral code.
     string? ReferralCode { get; }
-
-    // Gets the current user's first name.
-    string? FirstName { get; }
 }

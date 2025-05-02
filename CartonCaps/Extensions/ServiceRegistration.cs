@@ -1,3 +1,5 @@
+using CartonCaps.Data;
+using CartonCaps.IData;
 using CartonCaps.IServices;
 using CartonCaps.Services;
 
@@ -15,5 +17,6 @@ public static class ServiceRegistration
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IReferralService, ReferralService>();
         services.AddScoped<ISharedLinkService, SharedLinkService>();
+        services.AddScoped<IMockData, MockData>();
     }
 }

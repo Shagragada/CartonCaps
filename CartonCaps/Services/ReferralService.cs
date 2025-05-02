@@ -1,11 +1,20 @@
 using CartonCaps.Data;
 using CartonCaps.Dtos;
+using CartonCaps.IData;
 using CartonCaps.IServices;
+using CartonCaps.Models;
 
 namespace CartonCaps.Services;
 
 public class ReferralService : IReferralService
 {
+    private readonly IMockData _mockData;
+
+    public ReferralService(IMockData mockData)
+    {
+        _mockData = mockData;
+    }
+
     public GetReferralResponse CreateReferral(int userId)
     {
         throw new NotImplementedException();
@@ -13,10 +22,13 @@ public class ReferralService : IReferralService
 
     public IEnumerable<GetReferralResponse> GetReferrals(int userId)
     {
+        var referrals = _mockData.GetReferrals();
+        var users = _mockData.GetUsers();
+
         var result =
-            from referral in MockData.Referrals
+            from referral in referrals
             where referral.ReferrerId == userId
-            join referredUser in MockData.Users on referral.ReferredId equals referredUser.Id
+            join referredUser in users on referral.ReferredId equals referredUser.Id
             select new GetReferralResponse(
                 referral.Id,
                 $"{referredUser.FirstName} {referredUser.LastName.FirstOrDefault()}.",
@@ -26,12 +38,11 @@ public class ReferralService : IReferralService
         return result;
     }
 
-    public GetReferralResponse ValidateReferralCode(string referralCode)
+    public User? ValidateReferralCode(string referralCode)
     {
-        var referral = MockData.Users.FirstOrDefault(r => r.ReferralCode == referralCode);
-        if (referral == null)
-            throw new ArgumentException("Invalid referral code.");
-
-        return null;
+        if (string.IsNullOrWhiteSpace(referralCode))
+            return null;
+        var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
+        return user;
     }
 }

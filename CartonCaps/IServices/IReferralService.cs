@@ -1,4 +1,5 @@
 using CartonCaps.Dtos;
+using CartonCaps.Models;
 
 namespace CartonCaps.IServices;
 
@@ -6,5 +7,5 @@ public interface IReferralService
 {
     IEnumerable<GetReferralResponse> GetReferrals(int userId);
     GetReferralResponse CreateReferral(int userId);
-    GetReferralResponse ValidateReferralCode(string referralCode);
+    User? ValidateReferralCode(string referralCode);
 }

@@ -1,6 +1,7 @@
 using System.Web;
 using CartonCaps.Data;
 using CartonCaps.Dtos;
+using CartonCaps.IData;
 using CartonCaps.IServices;
 using CartonCaps.MessageTemplate;
 
@@ -9,10 +10,12 @@ namespace CartonCaps.Services;
 public class SharedLinkService : ISharedLinkService
 {
     private readonly ICurrentUserService _currentUserService;
+    private readonly IMockData _mockData;
 
-    public SharedLinkService(ICurrentUserService currentUserService)
+    public SharedLinkService(ICurrentUserService currentUserService, IMockData mockData)
     {
         _currentUserService = currentUserService;
+        _mockData = mockData;
     }
 
     public SharedLinkResponse GenerateSharedLink(string baseUrl)
@@ -37,7 +40,7 @@ public class SharedLinkService : ISharedLinkService
 
         if (string.IsNullOrWhiteSpace(referralCode))
             return false;
-        var user = MockData.Users.FirstOrDefault(r => r.ReferralCode == referralCode);
+        var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
 
         return user != null;
     }
