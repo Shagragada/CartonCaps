@@ -11,7 +11,7 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public int? UserId
+    public int UserId
     {
         get
         {
@@ -20,18 +20,18 @@ public class CurrentUserService : ICurrentUserService
             {
                 return userId;
             }
-            return null;
+            return 1; // Logged in user Id. This will be added to claims when user logs in.
         }
     }
 
-    public string? ReferralCode
+    public string ReferralCode
     {
         get
         {
             var referralCodeClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(
                 "ReferralCode"
             );
-            return referralCodeClaim?.Value;
+            return "Ref123"; // Default referral code. This will be added to claims when user logs in.
         }
     }
 }

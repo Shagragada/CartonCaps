@@ -9,9 +9,9 @@ namespace CartonCaps.Services;
 public class ReferralService : IReferralService
 {
     private readonly IMockData _mockData;
-    private readonly Logger<ReferralService> _logger;
+    private readonly ILogger<ReferralService> _logger;
 
-    public ReferralService(IMockData mockData, Logger<ReferralService> logger)
+    public ReferralService(IMockData mockData, ILogger<ReferralService> logger)
     {
         _mockData = mockData;
         _logger = logger;
@@ -38,7 +38,7 @@ public class ReferralService : IReferralService
                 select new GetReferralResponse(
                     referral.Id,
                     $"{referredUser.FirstName} {referredUser.LastName.FirstOrDefault()}.",
-                    referral.Status,
+                    referral.Status.ToString(),
                     referral.CompletedDate
                 );
 
@@ -62,7 +62,11 @@ public class ReferralService : IReferralService
                 return Result<User>.Error("Referral code is required.");
 
             // Get user with the given referral code
-            var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
+            var user = _mockData
+                .GetUsers()
+                .FirstOrDefault(r =>
+                    r.ReferralCode.Equals(referralCode, StringComparison.OrdinalIgnoreCase)
+                );
 
             if (user == null)
                 return Result<User>.Error("Invalid referral code.");
