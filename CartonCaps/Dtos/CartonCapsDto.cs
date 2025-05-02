@@ -11,6 +11,15 @@ public record GetReferralResponse(
 
 public record SharedLinkResponse(
     string referralLink,
-    SharedMessageTemplate email,
-    SharedMessageTemplate sms
+    SharedMessageTemplate Email,
+    SharedMessageTemplate Sms
+);
+
+public record ReferralDetectionRequest(string ReferralCode);
+
+public record ReferralDetectionResponse(
+    bool IsReferred,
+    string? ReferralCode,
+    int? ReferrerId,
+    string? ReferredBy
 );

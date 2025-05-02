@@ -1,3 +1,4 @@
+using CartonCaps.Dtos;
 using CartonCaps.Enums;
 using CartonCaps.IServices;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,19 @@ public class SharedLinkController : ControllerBase
     private readonly ISharedLinkService _sharedLinkService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IConfiguration _configuration;
+    private readonly IReferralService _referralService;
 
     public SharedLinkController(
         ISharedLinkService sharedLinkService,
         ICurrentUserService currentUserService,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IReferralService referralService
     )
     {
         _sharedLinkService = sharedLinkService;
         _currentUserService = currentUserService;
         _configuration = configuration;
+        _referralService = referralService;
     }
 
     /// <summary>
@@ -54,5 +58,42 @@ public class SharedLinkController : ControllerBase
             return Ok(result.Value);
         }
         return BadRequest(result.Errors);
+    }
+
+    [HttpPost("detect-referral")]
+    public IActionResult DetectReferral([FromBody] ReferralDetectionRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.ReferralCode))
+            return Ok(
+                new ReferralDetectionResponse(
+                    IsReferred: false,
+                    ReferralCode: null,
+                    ReferrerId: null,
+                    ReferredBy: null
+                )
+            );
+
+        var validationResult = _referralService.ValidateReferralCode(request.ReferralCode);
+
+        if (!validationResult.IsSuccess)
+        {
+            return Ok(
+                new ReferralDetectionResponse(
+                    IsReferred: false,
+                    ReferralCode: null,
+                    ReferrerId: null,
+                    ReferredBy: null
+                )
+            );
+        }
+
+        return Ok(
+            new ReferralDetectionResponse(
+                IsReferred: true,
+                ReferralCode: request.ReferralCode,
+                ReferrerId: validationResult.Value.Id,
+                ReferredBy: $"{validationResult.Value.FirstName} {validationResult.Value.LastName.FirstOrDefault()}."
+            )
+        );
     }
 }
