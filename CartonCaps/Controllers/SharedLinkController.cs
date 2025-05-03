@@ -11,19 +11,16 @@ public class SharedLinkController : ControllerBase
 {
     private readonly ISharedLinkService _sharedLinkService;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IConfiguration _configuration;
     private readonly IReferralService _referralService;
 
     public SharedLinkController(
         ISharedLinkService sharedLinkService,
         ICurrentUserService currentUserService,
-        IConfiguration configuration,
         IReferralService referralService
     )
     {
         _sharedLinkService = sharedLinkService;
         _currentUserService = currentUserService;
-        _configuration = configuration;
         _referralService = referralService;
     }
 
@@ -49,20 +46,10 @@ public class SharedLinkController : ControllerBase
         return BadRequest(result.Errors);
     }
 
-    [HttpPost("validate-shared-link")]
-    public IActionResult ValidateSharedLink([FromBody] string token)
-    {
-        var result = _sharedLinkService.ValidateSharedLink(token);
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-        return BadRequest(result.Errors);
-    }
-
     [HttpPost("detect-referral")]
     public IActionResult DetectReferral([FromBody] ReferralDetectionRequest request)
     {
+        // If ReferralCode is null or empty, user is not referred
         if (string.IsNullOrWhiteSpace(request.ReferralCode))
             return Ok(
                 new ReferralDetectionResponse(
@@ -73,8 +60,10 @@ public class SharedLinkController : ControllerBase
                 )
             );
 
+        // Check if referral code belongs to a valid user
         var validationResult = _referralService.ValidateReferralCode(request.ReferralCode);
 
+        // If user is not valid, return response indicating no referral
         if (!validationResult.IsSuccess)
         {
             return Ok(
@@ -87,6 +76,7 @@ public class SharedLinkController : ControllerBase
             );
         }
 
+        // Return response indicating referral was detected
         return Ok(
             new ReferralDetectionResponse(
                 IsReferred: true,

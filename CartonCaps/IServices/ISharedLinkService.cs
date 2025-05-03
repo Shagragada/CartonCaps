@@ -7,5 +7,4 @@ namespace CartonCaps.IServices;
 public interface ISharedLinkService
 {
     Result<SharedLinkResponse> GenerateSharedLink(OsPlatform osPlatform, string referralCode);
-    Result<bool> ValidateSharedLink(string token);
 }

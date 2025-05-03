@@ -32,6 +32,7 @@ public class SharedLinkService : ISharedLinkService
     {
         try
         {
+            // Determine the base URL based on the OS platform
             var baseUrl = osPlatform switch
             {
                 OsPlatform.Web => _configuration["ReferralLinks:Web"],
@@ -69,35 +70,6 @@ public class SharedLinkService : ISharedLinkService
             return Result<SharedLinkResponse>.Error(
                 "An error occurred while generating the shared link."
             );
-        }
-    }
-
-    //Todo: Update this method to return a complex type
-    public Result<bool> ValidateSharedLink(string referralLink)
-    {
-        try
-        {
-            // Check for empty referral link
-            if (string.IsNullOrWhiteSpace(referralLink))
-                return Result<bool>.Error("Referral link is required.");
-
-            // Parse the referral link to extract the referral code
-            var uri = new Uri(referralLink);
-            var query = HttpUtility.ParseQueryString(uri.Query);
-            var referralCode = query.Get("referral_code");
-
-            if (string.IsNullOrWhiteSpace(referralCode))
-                return false;
-
-            // Check if the referral code is associated with a user
-            var user = _mockData.GetUsers().FirstOrDefault(r => r.ReferralCode == referralCode);
-
-            return user != null;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error validating shared link {ReferralLink}.", referralLink);
-            return Result<bool>.Error("An error occurred while validating the shared link.");
         }
     }
 }

@@ -31,7 +31,7 @@ public class CurrentUserService : ICurrentUserService
             var referralCodeClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(
                 "ReferralCode"
             );
-            return "Ref123"; // Default referral code. This will be added to claims when user logs in.
+            return referralCodeClaim?.Value ?? "Ref123"; // Default referral code. This will be added to claims when user logs in.
         }
     }
 }
