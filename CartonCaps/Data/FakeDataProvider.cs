@@ -4,7 +4,7 @@ using CartonCaps.Models;
 
 namespace CartonCaps.Data;
 
-public class MockData : IMockData
+public class FakeDataProvider : IDataProvider
 {
     public List<Referral> GetReferrals() =>
         [
