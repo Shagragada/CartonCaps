@@ -397,7 +397,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-appsettings.*.json
+# appsettings.*.json
 build-output/*
 !build-output/docker-compose.yml
 !build-output/scripts/
