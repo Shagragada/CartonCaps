@@ -8,18 +8,19 @@ namespace CartonCaps.Services;
 
 public class ReferralService : IReferralService
 {
-    private readonly IMockData _mockData;
+    private readonly IDataProvider _providerData;
     private readonly ILogger<ReferralService> _logger;
+    private readonly IAccountService _accountService;
 
-    public ReferralService(IMockData mockData, ILogger<ReferralService> logger)
+    public ReferralService(
+        IDataProvider dataProvider,
+        ILogger<ReferralService> logger,
+        IAccountService accountService
+    )
     {
-        _mockData = mockData;
+        _providerData = dataProvider;
         _logger = logger;
-    }
-
-    public GetReferralResponse CreateReferral(int userId)
-    {
-        throw new NotImplementedException();
+        _accountService = accountService;
     }
 
     public Result<List<GetReferralResponse>> GetReferrals(int userId)
@@ -27,8 +28,8 @@ public class ReferralService : IReferralService
         try
         {
             // Fetch referrals and users from mock data
-            var referrals = _mockData.GetReferrals();
-            var users = _mockData.GetUsers();
+            var referrals = _providerData.GetReferrals();
+            var users = _providerData.GetUsers();
 
             // Gets referrals for the specified user
             var result =
@@ -62,14 +63,11 @@ public class ReferralService : IReferralService
                 return Result<User>.Error("Referral code is required.");
 
             // Get user with the given referral code
-            var user = _mockData
-                .GetUsers()
-                .FirstOrDefault(r =>
-                    r.ReferralCode.Equals(referralCode, StringComparison.OrdinalIgnoreCase)
-                );
+            var user = _accountService.GetUserByReferralCode(referralCode);
 
+            //User not found for the provided referral code
             if (user == null)
-                return Result<User>.Error("Invalid referral code.");
+                return Result<User>.NotFound("User not found for the provided referral code.");
 
             return Result<User>.Success(user);
         }

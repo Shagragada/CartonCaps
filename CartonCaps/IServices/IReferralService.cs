@@ -7,6 +7,5 @@ namespace CartonCaps.IServices;
 public interface IReferralService
 {
     Result<List<GetReferralResponse>> GetReferrals(int userId);
-    GetReferralResponse CreateReferral(int userId);
     Result<User> ValidateReferralCode(string referralCode);
 }
