@@ -1,5 +1,6 @@
 using CartonCaps.Dtos;
 using CartonCaps.Enums;
+using CartonCaps.Extensions;
 using CartonCaps.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +11,14 @@ namespace CartonCaps.Controllers;
 public class SharedLinkController : ControllerBase
 {
     private readonly ISharedLinkService _sharedLinkService;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IReferralService _referralService;
 
     public SharedLinkController(
         ISharedLinkService sharedLinkService,
-        ICurrentUserService currentUserService,
         IReferralService referralService
     )
     {
         _sharedLinkService = sharedLinkService;
-        _currentUserService = currentUserService;
         _referralService = referralService;
     }
 
@@ -29,16 +27,13 @@ public class SharedLinkController : ControllerBase
     /// </summary>
     /// <param name="osPlatform">
     /// The target platform for the shared link:
-    /// 0 (iOS), 1 (Android), or 2 (Web)
+    /// 1 (iOS), 2 (Android), or 3 (Web)
     /// </param>
     /// <returns>A shareable link object</returns>
     [HttpPost("generate-shared-link")]
     public IActionResult GenerateSharedLink(OsPlatform osPlatform)
     {
-        var result = _sharedLinkService.GenerateSharedLink(
-            osPlatform,
-            _currentUserService.ReferralCode
-        );
+        var result = _sharedLinkService.GenerateSharedLink(osPlatform, User.GetReferralCode());
         if (result.IsSuccess)
         {
             return Ok(result.Value);
@@ -51,7 +46,7 @@ public class SharedLinkController : ControllerBase
     {
         // If ReferralCode is null or empty, user is not referred
         if (string.IsNullOrWhiteSpace(request.ReferralCode))
-            return Ok(
+            return NotFound(
                 new ReferralDetectionResponse(
                     IsReferred: false,
                     ReferralCode: null,
@@ -66,7 +61,7 @@ public class SharedLinkController : ControllerBase
         // If user is not valid, return response indicating no referral
         if (!validationResult.IsSuccess)
         {
-            return Ok(
+            return NotFound(
                 new ReferralDetectionResponse(
                     IsReferred: false,
                     ReferralCode: null,

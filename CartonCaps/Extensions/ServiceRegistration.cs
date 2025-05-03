@@ -17,6 +17,6 @@ public static class ServiceRegistration
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IReferralService, ReferralService>();
         services.AddScoped<ISharedLinkService, SharedLinkService>();
-        services.AddScoped<IMockData, MockData>();
+        services.AddScoped<IDataProvider, FakeDataProvider>();
     }
 }

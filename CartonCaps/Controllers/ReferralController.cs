@@ -1,3 +1,5 @@
+using Ardalis.Result;
+using CartonCaps.Extensions;
 using CartonCaps.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,40 +10,32 @@ namespace CartonCaps.Controllers;
 public class ReferralController : ControllerBase
 {
     private readonly IReferralService _referralService;
-    private readonly ICurrentUserService _currentUserService;
 
-    public ReferralController(
-        IReferralService referralService,
-        ICurrentUserService currentUserService
-    )
+    public ReferralController(IReferralService referralService)
     {
         _referralService = referralService;
-        _currentUserService = currentUserService;
     }
 
     [HttpGet("get-referrals")]
     public IActionResult GetReferrals()
     {
-        var result = _referralService.GetReferrals(_currentUserService.UserId);
+        var result = _referralService.GetReferrals(User.GetUserId());
         if (result.IsSuccess)
             return Ok(result.Value);
 
         return BadRequest(result.Errors);
     }
 
-    [HttpPost("{userId}/create")]
-    public IActionResult CreateReferral(int userId)
-    {
-        var response = _referralService.CreateReferral(userId);
-        return Ok(response);
-    }
-
     [HttpPost("validate-code")]
     public IActionResult ValidateReferralCode([FromQuery] string referralCode)
     {
         var result = _referralService.ValidateReferralCode(referralCode);
+
         if (result.IsSuccess)
             return Ok(result.Value);
+
+        if (result.IsNotFound())
+            return NotFound(result.Errors);
 
         return BadRequest(result.Errors);
     }
