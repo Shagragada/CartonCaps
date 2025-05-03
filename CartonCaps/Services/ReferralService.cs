@@ -22,7 +22,7 @@ public class ReferralService : IReferralService
         throw new NotImplementedException();
     }
 
-    public Result<IEnumerable<GetReferralResponse>> GetReferrals(int userId)
+    public Result<List<GetReferralResponse>> GetReferrals(int userId)
     {
         try
         {
@@ -42,12 +42,12 @@ public class ReferralService : IReferralService
                     referral.CompletedDate
                 );
 
-            return Result<IEnumerable<GetReferralResponse>>.Success(result);
+            return Result<List<GetReferralResponse>>.Success([.. result]);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Error retrieving referrals for user {UserId}", userId);
-            return Result<IEnumerable<GetReferralResponse>>.Error(
+            return Result<List<GetReferralResponse>>.Error(
                 "An error occurred while retrieving referrals."
             );
         }
