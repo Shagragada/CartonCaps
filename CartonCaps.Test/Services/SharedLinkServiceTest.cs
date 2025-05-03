@@ -84,14 +84,14 @@ public class SharedLinkServiceTest
 
         _referralService
             .Setup(r => r.ValidateReferralCode(code))
-            .Returns(Result<User>.Error("Invalid referral code."));
+            .Returns(Result<User>.Error("User not found for the provided referral code."));
 
         // Act
         var result = _service.GenerateSharedLink(os, code);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Invalid referral code.");
+        result.Errors.Should().Contain("User not found for the provided referral code.");
     }
 
     [Fact]

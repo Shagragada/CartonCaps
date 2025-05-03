@@ -11,7 +11,7 @@ namespace CartonCaps.Test.Services;
 public class ReferralServiceTest
 {
     private readonly ReferralService _referralService;
-    private readonly Mock<IMockData> _mockData = new();
+    private readonly Mock<IDataProvider> _mockData = new();
     private readonly Mock<ILogger<ReferralService>> _logger = new();
 
     public ReferralServiceTest()
@@ -87,7 +87,7 @@ public class ReferralServiceTest
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Invalid referral code.");
+        result.Errors.Should().Contain("User not found for the provided referral code.");
     }
 
     [Fact]

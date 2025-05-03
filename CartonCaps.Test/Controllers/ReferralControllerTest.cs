@@ -13,12 +13,12 @@ namespace CartonCaps.Test.Controllers;
 public class ReferralControllerTest
 {
     private readonly Mock<IReferralService> _referralService = new();
-    private readonly Mock<ICurrentUserService> _currentUserService = new();
     private readonly ReferralController _controller;
+    private readonly Mock<IAccountService> _accountService = new();
 
     public ReferralControllerTest()
     {
-        _controller = new ReferralController(_referralService.Object, _currentUserService.Object);
+        _controller = new ReferralController(_referralService.Object);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ReferralControllerTest
             ),
         };
 
-        _currentUserService.Setup(x => x.UserId).Returns(userId);
+        //_currentUserService.Setup(x => x.UserId).Returns(userId);
         _referralService
             .Setup(x => x.GetReferrals(userId))
             .Returns(Result<List<GetReferralResponse>>.Success(referralList));
@@ -57,7 +57,7 @@ public class ReferralControllerTest
         var userId = 1;
         var error = "Error fetching referrals";
 
-        _currentUserService.Setup(x => x.UserId).Returns(userId);
+        //_currentUserService.Setup(x => x.UserId).Returns(userId);
         _referralService
             .Setup(x => x.GetReferrals(userId))
             .Returns(Result<List<GetReferralResponse>>.Error(error));
