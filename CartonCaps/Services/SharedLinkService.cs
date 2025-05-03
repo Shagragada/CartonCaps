@@ -1,8 +1,6 @@
-using System.Web;
 using Ardalis.Result;
 using CartonCaps.Dtos;
 using CartonCaps.Enums;
-using CartonCaps.IData;
 using CartonCaps.IServices;
 using CartonCaps.MessageTemplate;
 
@@ -10,19 +8,16 @@ namespace CartonCaps.Services;
 
 public class SharedLinkService : ISharedLinkService
 {
-    private readonly IMockData _mockData;
     private readonly ILogger<SharedLinkService> _logger;
     private readonly IReferralService _referralService;
     private readonly IConfiguration _configuration;
 
     public SharedLinkService(
-        IMockData mockData,
         ILogger<SharedLinkService> logger,
         IReferralService referralService,
         IConfiguration configuration
     )
     {
-        _mockData = mockData;
         _logger = logger;
         _referralService = referralService;
         _configuration = configuration;
