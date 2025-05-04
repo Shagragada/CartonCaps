@@ -2,6 +2,7 @@ using System.Security.Claims;
 
 namespace CartonCaps.Extensions;
 
+// Adds logged in user info to claims
 public static class UserExtension
 {
     public static int GetUserId(this ClaimsPrincipal user)

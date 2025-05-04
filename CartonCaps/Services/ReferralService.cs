@@ -77,21 +77,4 @@ public class ReferralService : IReferralService
             return Result<User>.Error("An error occurred while validating the referral code.");
         }
     }
-
-    public bool RedeemReferralCode(string userEmail)
-    {
-        var email = _dataProvider
-            .GetCreatedAccounts()
-            .FirstOrDefault(r => r.Contains(userEmail, StringComparison.OrdinalIgnoreCase));
-
-        if (email == null)
-        {
-            //User is new, give reward
-            _dataProvider.AddEmailToCreaetedAccount(userEmail);
-            return true;
-        }
-
-        //User account was once created, deny reward
-        return false;
-    }
 }

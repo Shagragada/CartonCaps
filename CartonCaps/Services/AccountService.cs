@@ -8,12 +8,12 @@ namespace CartonCaps.Services;
 public class AccountService : IAccountService
 {
     private readonly IDataProvider _dataProvider;
-    private readonly IReferralService _referralService;
+    private readonly IRedemptionService _redemptionService;
 
-    public AccountService(IDataProvider dataProvider, IReferralService referralService)
+    public AccountService(IDataProvider dataProvider, IRedemptionService redemptionService)
     {
         _dataProvider = dataProvider;
-        _referralService = referralService;
+        _redemptionService = redemptionService;
     }
 
     public User? GetUserByReferralCode(string referralCode)
@@ -40,7 +40,7 @@ public class AccountService : IAccountService
         };
 
         _dataProvider.SaveUser(newUser);
-        _referralService.RedeemReferralCode(request.Email);
+        _redemptionService.RedeemReferralCode(request.Email);
         return newUser;
     }
 }

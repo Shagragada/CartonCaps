@@ -8,5 +8,4 @@ public interface IReferralService
 {
     Result<List<GetReferralResponse>> GetReferrals(int userId);
     Result<User> ValidateReferralCode(string referralCode);
-    bool RedeemReferralCode(string userEmail);
 }

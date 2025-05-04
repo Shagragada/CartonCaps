@@ -37,6 +37,7 @@ public static class ServiceRegistration
         services.AddScoped<ISharedLinkService, SharedLinkService>();
         services.AddScoped<IDataProvider, FakeDataProvider>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IRedemptionService, RedemptionService>();
         services.AddSingleton<ITemplateService>(provider => new TemplateService(
             Path.Combine(Directory.GetCurrentDirectory(), "MessageTemplate")
         ));
