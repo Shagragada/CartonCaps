@@ -40,13 +40,29 @@ public class SharedLinkControllerTest
         };
     }
 
-    [Fact]
-    public void GenerateSharedLink_ReturnsOk_WhenServiceSucceeds()
+    [Theory]
+    [InlineData([OsPlatform.Android, SharingMedium.Email])]
+    [InlineData([OsPlatform.Android, SharingMedium.SMS])]
+    [InlineData([OsPlatform.iOS, SharingMedium.Email])]
+    [InlineData([OsPlatform.iOS, SharingMedium.SMS])]
+    [InlineData([OsPlatform.Web, SharingMedium.Email])]
+    [InlineData([OsPlatform.Web, SharingMedium.SMS])]
+    public void GenerateSharedLink_ReturnsOk_WhenServiceSucceeds(
+        OsPlatform platform,
+        SharingMedium medium
+    )
     {
         // Arrange
-        var request = new SharedLinkRequest(OsPlatform.Android, SharingMedium.SMS);
+        var request = new SharedLinkRequest(platform, medium);
+        var baseUrl = platform switch
+        {
+            OsPlatform.Android => "app://android.livefront.com/referral",
+            OsPlatform.iOS => "app://ios.livefront.com/referral",
+            OsPlatform.Web => "https://web.livefront.com/referral",
+            _ => null,
+        };
         var expectedResponse = new SharedLinkResponse(
-            "app://android.livefront.com/referral?referral_code=REF123",
+            $"{baseUrl}?referral_code=REF123",
             new SharedMessageTemplate("Subject", "Message")
         );
 

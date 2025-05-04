@@ -30,16 +30,40 @@ public class SharedLinkServiceTest
         );
     }
 
-    [Fact]
-    public void GenerateSharedLink_ReturnsSuccess_WhenInputIsValid()
+    [Theory]
+    [InlineData([OsPlatform.Android, SharingMedium.Email])]
+    [InlineData([OsPlatform.Android, SharingMedium.SMS])]
+    [InlineData([OsPlatform.iOS, SharingMedium.Email])]
+    [InlineData([OsPlatform.iOS, SharingMedium.SMS])]
+    [InlineData([OsPlatform.Web, SharingMedium.Email])]
+    [InlineData([OsPlatform.Web, SharingMedium.SMS])]
+    public void GenerateSharedLink_ReturnsSuccess_WhenInputIsValid(
+        OsPlatform platform,
+        SharingMedium medium
+    )
     {
         // Arrange
-        var request = new SharedLinkRequest(OsPlatform.Android, SharingMedium.Email);
+        var request = new SharedLinkRequest(platform, medium);
         var code = "ABC123";
-        var baseUrl = "app://android.livefront.com/referral";
+        var baseUrl = platform switch
+        {
+            OsPlatform.Android => "app://android.livefront.com/referral",
+            OsPlatform.iOS => "app://ios.livefront.com/referral",
+            OsPlatform.Web => "https://web.livefront.com/referral",
+            _ => null,
+        };
+
+        var config = platform switch
+        {
+            OsPlatform.Android => "Android",
+            OsPlatform.iOS => "iOS",
+            OsPlatform.Web => "Web",
+            _ => null,
+        };
+
         var expectedLink = $"{baseUrl}?referral_code={code}";
 
-        _configuration.Setup(c => c["ReferralLinks:Android"]).Returns(baseUrl);
+        _configuration.Setup(c => c[$"ReferralLinks:{config}"]).Returns(baseUrl);
 
         _referralService
             .Setup(r => r.ValidateReferralCode(code))
