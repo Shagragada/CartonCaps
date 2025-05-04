@@ -22,3 +22,11 @@ public record ReferralDetectionResponse(
     int? ReferrerId,
     string? ReferredBy
 );
+
+public record CreateUserRequest(
+    string FirstName,
+    string LastName,
+    string Email,
+    DateOnly DateOfBirth,
+    string Zipcode
+);

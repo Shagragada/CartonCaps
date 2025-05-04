@@ -8,7 +8,7 @@ namespace CartonCaps.Services;
 
 public class ReferralService : IReferralService
 {
-    private readonly IDataProvider _providerData;
+    private readonly IDataProvider _dataProvider;
     private readonly ILogger<ReferralService> _logger;
     private readonly IAccountService _accountService;
 
@@ -18,7 +18,7 @@ public class ReferralService : IReferralService
         IAccountService accountService
     )
     {
-        _providerData = dataProvider;
+        _dataProvider = dataProvider;
         _logger = logger;
         _accountService = accountService;
     }
@@ -28,8 +28,8 @@ public class ReferralService : IReferralService
         try
         {
             // Fetch referrals and users from mock data
-            var referrals = _providerData.GetReferrals();
-            var users = _providerData.GetUsers();
+            var referrals = _dataProvider.GetReferrals();
+            var users = _dataProvider.GetUsers();
 
             // Gets referrals for the specified user
             var result =
@@ -76,5 +76,22 @@ public class ReferralService : IReferralService
             _logger.LogError(e, "Error validating referral code {ReferralCode}", referralCode);
             return Result<User>.Error("An error occurred while validating the referral code.");
         }
+    }
+
+    public bool RedeemReferralCode(string userEmail)
+    {
+        var email = _dataProvider
+            .GetCreatedAccounts()
+            .FirstOrDefault(r => r.Contains(userEmail, StringComparison.OrdinalIgnoreCase));
+
+        if (email == null)
+        {
+            //User is new, give reward
+            _dataProvider.AddEmailToCreaetedAccount(userEmail);
+            return true;
+        }
+
+        //User account was once created, deny reward
+        return false;
     }
 }
