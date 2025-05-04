@@ -1,6 +1,9 @@
 using Ardalis.Result;
+using CartonCaps.Dtos;
 using CartonCaps.Extensions;
 using CartonCaps.IServices;
+using CartonCaps.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartonCaps.Controllers;
@@ -16,6 +19,8 @@ public class ReferralController : ControllerBase
         _referralService = referralService;
     }
 
+    [ProducesResponseType(typeof(Ok<List<GetReferralResponse>>), 200)]
+    [ProducesResponseType(typeof(BadRequest), 400)]
     [HttpGet("get-referrals")]
     public IActionResult GetReferrals()
     {
@@ -26,6 +31,9 @@ public class ReferralController : ControllerBase
         return BadRequest(result.Errors);
     }
 
+    [ProducesResponseType(typeof(Ok<User>), 200)]
+    [ProducesResponseType(typeof(NotFound), 404)]
+    [ProducesResponseType(typeof(BadRequest), 400)]
     [HttpPost("validate-code")]
     public IActionResult ValidateReferralCode([FromQuery] string referralCode)
     {

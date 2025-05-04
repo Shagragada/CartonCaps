@@ -2,6 +2,7 @@ using CartonCaps.Dtos;
 using CartonCaps.Enums;
 using CartonCaps.Extensions;
 using CartonCaps.IServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CartonCaps.Controllers;
@@ -22,14 +23,8 @@ public class SharedLinkController : ControllerBase
         _referralService = referralService;
     }
 
-    /// <summary>
-    /// Generates a shareable referral link for the specified platform
-    /// </summary>
-    /// <param name="osPlatform">
-    /// The target platform for the shared link:
-    /// 1 (iOS), 2 (Android), or 3 (Web)
-    /// </param>
-    /// <returns>A shareable link object</returns>
+    [ProducesResponseType(typeof(Ok<SharedLinkResponse>), 200)]
+    [ProducesResponseType(typeof(BadRequest), 400)]
     [HttpPost("generate-shared-link")]
     public IActionResult GenerateSharedLink(OsPlatform osPlatform)
     {
@@ -41,11 +36,14 @@ public class SharedLinkController : ControllerBase
         return BadRequest(result.Errors);
     }
 
+    [ProducesResponseType(typeof(Ok<ReferralDetectionResponse>), 200)]
+    [ProducesResponseType(typeof(NotFound), 404)]
+    [ProducesResponseType(typeof(BadRequest), 400)]
     [HttpPost("detect-referral")]
-    public IActionResult DetectReferral([FromBody] ReferralDetectionRequest request)
+    public IActionResult DetectReferral([FromQuery] string referralCode)
     {
         // If ReferralCode is null or empty, user is not referred
-        if (string.IsNullOrWhiteSpace(request.ReferralCode))
+        if (string.IsNullOrWhiteSpace(referralCode))
             return NotFound(
                 new ReferralDetectionResponse(
                     IsReferred: false,
@@ -56,7 +54,7 @@ public class SharedLinkController : ControllerBase
             );
 
         // Check if referral code belongs to a valid user
-        var validationResult = _referralService.ValidateReferralCode(request.ReferralCode);
+        var validationResult = _referralService.ValidateReferralCode(referralCode);
 
         // If user is not valid, return response indicating no referral
         if (!validationResult.IsSuccess)
@@ -75,7 +73,7 @@ public class SharedLinkController : ControllerBase
         return Ok(
             new ReferralDetectionResponse(
                 IsReferred: true,
-                ReferralCode: request.ReferralCode,
+                ReferralCode: referralCode,
                 ReferrerId: validationResult.Value.Id,
                 ReferredBy: $"{validationResult.Value.FirstName} {validationResult.Value.LastName.FirstOrDefault()}."
             )

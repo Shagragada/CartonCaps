@@ -1,3 +1,4 @@
+using System.Reflection;
 using CartonCaps.Data;
 using CartonCaps.IData;
 using CartonCaps.IServices;
@@ -26,6 +27,10 @@ public static class ServiceRegistration
                     Description = "Referral system API documentation",
                 }
             );
+
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
         });
 
         services.AddScoped<IReferralService, ReferralService>();
