@@ -77,21 +77,21 @@ public class SharedLinkServiceTest
         // Arrange
         var os = OsPlatform.Web;
         var code = "INVALID";
-
+        var error = "Invalid referral code.";
         _configuration
             .Setup(c => c["ReferralLinks:Web"])
             .Returns("https://web.livefront.com/referral");
 
         _referralService
             .Setup(r => r.ValidateReferralCode(code))
-            .Returns(Result<User>.Error("User not found for the provided referral code."));
+            .Returns(Result<User>.Error(error));
 
         // Act
         var result = _service.GenerateSharedLink(os, code);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("User not found for the provided referral code.");
+        result.Errors.Should().Contain(error);
     }
 
     [Fact]

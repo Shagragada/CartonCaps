@@ -11,7 +11,7 @@ public static class UserExtension
         {
             return userId;
         }
-        return 0; // Default or error value if no claim found
+        return 1; // Default or error value if no claim found
     }
 
     public static string GetReferralCode(this ClaimsPrincipal user)

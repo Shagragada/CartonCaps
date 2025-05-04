@@ -14,9 +14,9 @@ public static class ServiceRegistration
         services.AddEndpointsApiExplorer();
         services.AddHttpContextAccessor();
 
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IReferralService, ReferralService>();
         services.AddScoped<ISharedLinkService, SharedLinkService>();
         services.AddScoped<IDataProvider, FakeDataProvider>();
+        services.AddScoped<IAccountService, AccountService>();
     }
 }
