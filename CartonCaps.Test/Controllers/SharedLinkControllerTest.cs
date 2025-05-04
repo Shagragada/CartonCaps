@@ -4,6 +4,7 @@ using CartonCaps.Controllers;
 using CartonCaps.Dtos;
 using CartonCaps.Enums;
 using CartonCaps.IServices;
+using CartonCaps.MessageTemplate;
 using CartonCaps.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,6 @@ public class SharedLinkControllerTest
     )
     {
         var claims = new List<Claim> { new Claim("ReferralCode", referralCode) };
-
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -44,39 +44,38 @@ public class SharedLinkControllerTest
     public void GenerateSharedLink_ReturnsOk_WhenServiceSucceeds()
     {
         // Arrange
-        var osPlatform = OsPlatform.Android;
-        var expectedLink = new SharedLinkResponse(
-            "app://android.livefront.com/referral",
-            null,
-            null
+        var request = new SharedLinkRequest(OsPlatform.Android, SharingMedium.SMS);
+        var expectedResponse = new SharedLinkResponse(
+            "app://android.livefront.com/referral?referral_code=REF123",
+            new SharedMessageTemplate("Subject", "Message")
         );
 
         _sharedLinkService
-            .Setup(s => s.GenerateSharedLink(osPlatform, "REF123"))
-            .Returns(Result<SharedLinkResponse>.Success(expectedLink));
+            .Setup(s => s.GenerateSharedLink(request, "REF123"))
+            .Returns(Result<SharedLinkResponse>.Success(expectedResponse));
 
         // Act
-        var result = _controller.GenerateSharedLink(osPlatform);
+        var result = _controller.GenerateSharedLink(request);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
-        okResult!.Value.Should().BeEquivalentTo(expectedLink);
+        okResult!.Value.Should().BeEquivalentTo(expectedResponse);
     }
 
     [Fact]
     public void GenerateSharedLink_ReturnsBadRequest_WhenServiceFails()
     {
         // Arrange
-        var osPlatform = OsPlatform.iOS;
+        var request = new SharedLinkRequest(OsPlatform.iOS, SharingMedium.Email);
         var errors = new[] { "Failed to generate link." };
 
         _sharedLinkService
-            .Setup(s => s.GenerateSharedLink(osPlatform, "REF123"))
-            .Returns(Result<SharedLinkResponse>.Error(errors.FirstOrDefault()));
+            .Setup(s => s.GenerateSharedLink(request, "REF123"))
+            .Returns(Result<SharedLinkResponse>.Error(errors.First()));
 
         // Act
-        var result = _controller.GenerateSharedLink(osPlatform);
+        var result = _controller.GenerateSharedLink(request);
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
@@ -87,11 +86,8 @@ public class SharedLinkControllerTest
     [Fact]
     public void DetectReferral_ReturnsNotFound_WhenCodeIsNullOrEmpty()
     {
-        // Arrange
-        var request = new ReferralDetectionRequest(ReferralCode: string.Empty);
-
         // Act
-        var result = _controller.DetectReferral(request);
+        var result = _controller.DetectReferral("");
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
@@ -113,14 +109,13 @@ public class SharedLinkControllerTest
     {
         // Arrange
         var code = "INVALID";
-        var request = new ReferralDetectionRequest(ReferralCode: code);
 
         _referralService
             .Setup(s => s.ValidateReferralCode(code))
             .Returns(Result<User>.Error("Invalid code"));
 
         // Act
-        var result = _controller.DetectReferral(request);
+        var result = _controller.DetectReferral(code);
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
@@ -142,8 +137,6 @@ public class SharedLinkControllerTest
     {
         // Arrange
         var code = "VALID123";
-        var request = new ReferralDetectionRequest(ReferralCode: code);
-
         var user = new User
         {
             Id = 2,
@@ -156,7 +149,7 @@ public class SharedLinkControllerTest
             .Returns(Result<User>.Success(user));
 
         // Act
-        var result = _controller.DetectReferral(request);
+        var result = _controller.DetectReferral(code);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
