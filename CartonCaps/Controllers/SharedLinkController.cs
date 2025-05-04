@@ -26,9 +26,9 @@ public class SharedLinkController : ControllerBase
     [ProducesResponseType(typeof(Ok<SharedLinkResponse>), 200)]
     [ProducesResponseType(typeof(BadRequest), 400)]
     [HttpPost("generate-shared-link")]
-    public IActionResult GenerateSharedLink(OsPlatform osPlatform)
+    public IActionResult GenerateSharedLink([FromBody] SharedLinkRequest request)
     {
-        var result = _sharedLinkService.GenerateSharedLink(osPlatform, User.GetReferralCode());
+        var result = _sharedLinkService.GenerateSharedLink(request, User.GetReferralCode());
         if (result.IsSuccess)
         {
             return Ok(result.Value);

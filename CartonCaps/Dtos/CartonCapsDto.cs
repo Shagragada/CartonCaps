@@ -1,3 +1,4 @@
+using CartonCaps.Enums;
 using CartonCaps.MessageTemplate;
 
 namespace CartonCaps.Dtos;
@@ -9,11 +10,9 @@ public record GetReferralResponse(
     DateTime? CompletedDate
 );
 
-public record SharedLinkResponse(
-    string referralLink,
-    SharedMessageTemplate Email,
-    SharedMessageTemplate Sms
-);
+public record SharedLinkRequest(OsPlatform OsPlatform, SharingMedium SharingMedium);
+
+public record SharedLinkResponse(string ReferralLink, SharedMessageTemplate Message);
 
 public record ReferralDetectionRequest(string ReferralCode);
 

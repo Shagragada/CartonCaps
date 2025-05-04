@@ -25,12 +25,15 @@ public class SharedLinkService : ISharedLinkService
         _templateService = templateService;
     }
 
-    public Result<SharedLinkResponse> GenerateSharedLink(OsPlatform osPlatform, string referralCode)
+    public Result<SharedLinkResponse> GenerateSharedLink(
+        SharedLinkRequest sharedLinkRequest,
+        string referralCode
+    )
     {
         try
         {
             // Determine the base URL based on the OS platform
-            var baseUrl = osPlatform switch
+            var baseUrl = sharedLinkRequest.OsPlatform switch
             {
                 OsPlatform.Web => _configuration["ReferralLinks:Web"],
                 OsPlatform.Android => _configuration["ReferralLinks:Android"],
@@ -56,9 +59,15 @@ public class SharedLinkService : ISharedLinkService
             // Generate SMS and Email messages using the referral link
             var emailMessage = _templateService.CreateEmail(referralLink);
             var smsMessage = _templateService.CreateSms(referralLink);
+            var messageResult = sharedLinkRequest.SharingMedium switch
+            {
+                SharingMedium.Email => emailMessage,
+                SharingMedium.SMS => smsMessage,
+                _ => null,
+            };
 
             return Result<SharedLinkResponse>.Success(
-                new SharedLinkResponse(referralLink, emailMessage, smsMessage)
+                new SharedLinkResponse(referralLink, messageResult!)
             );
         }
         catch (Exception e)
