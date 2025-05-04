@@ -21,7 +21,7 @@ public class SharedLinkControllerTest
     public SharedLinkControllerTest()
     {
         _controller = new SharedLinkController(_sharedLinkService.Object, _referralService.Object);
-        SetUserWithReferralClaim(_controller, "ABC123");
+        SetUserWithReferralClaim(_controller, "REF123");
     }
 
     private static void SetUserWithReferralClaim(
@@ -45,10 +45,14 @@ public class SharedLinkControllerTest
     {
         // Arrange
         var osPlatform = OsPlatform.Android;
-        var expectedLink = new SharedLinkResponse("https://app.link/abc", null, null);
+        var expectedLink = new SharedLinkResponse(
+            "app://android.livefront.com/referral",
+            null,
+            null
+        );
 
         _sharedLinkService
-            .Setup(s => s.GenerateSharedLink(osPlatform, "ABC123"))
+            .Setup(s => s.GenerateSharedLink(osPlatform, "REF123"))
             .Returns(Result<SharedLinkResponse>.Success(expectedLink));
 
         // Act
@@ -68,7 +72,7 @@ public class SharedLinkControllerTest
         var errors = new[] { "Failed to generate link." };
 
         _sharedLinkService
-            .Setup(s => s.GenerateSharedLink(osPlatform, "ABC123"))
+            .Setup(s => s.GenerateSharedLink(osPlatform, "REF123"))
             .Returns(Result<SharedLinkResponse>.Error(errors.FirstOrDefault()));
 
         // Act
@@ -143,8 +147,8 @@ public class SharedLinkControllerTest
         var user = new User
         {
             Id = 2,
-            FirstName = "Jane",
-            LastName = "Smith",
+            FirstName = "Spider",
+            LastName = "Man",
         };
 
         _referralService
@@ -164,7 +168,7 @@ public class SharedLinkControllerTest
                     IsReferred: true,
                     ReferralCode: code,
                     ReferrerId: 2,
-                    ReferredBy: "Jane S."
+                    ReferredBy: "Spider M."
                 )
             );
     }
