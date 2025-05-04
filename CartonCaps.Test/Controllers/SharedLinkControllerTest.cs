@@ -99,7 +99,7 @@ public class SharedLinkControllerTest
                     IsReferred: false,
                     ReferralCode: null,
                     ReferrerId: null,
-                    ReferredBy: null
+                    ReferrerName: null
                 )
             );
     }
@@ -127,7 +127,7 @@ public class SharedLinkControllerTest
                     IsReferred: false,
                     ReferralCode: null,
                     ReferrerId: null,
-                    ReferredBy: null
+                    ReferrerName: null
                 )
             );
     }
@@ -161,7 +161,7 @@ public class SharedLinkControllerTest
                     IsReferred: true,
                     ReferralCode: code,
                     ReferrerId: 2,
-                    ReferredBy: "Spider M."
+                    ReferrerName: "Spider M."
                 )
             );
     }

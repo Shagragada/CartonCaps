@@ -48,7 +48,7 @@ public class SharedLinkController : ControllerBase
                     IsReferred: false,
                     ReferralCode: null,
                     ReferrerId: null,
-                    ReferredBy: null
+                    ReferrerName: null
                 )
             );
 
@@ -63,7 +63,7 @@ public class SharedLinkController : ControllerBase
                     IsReferred: false,
                     ReferralCode: null,
                     ReferrerId: null,
-                    ReferredBy: null
+                    ReferrerName: null
                 )
             );
         }
@@ -74,7 +74,7 @@ public class SharedLinkController : ControllerBase
                 IsReferred: true,
                 ReferralCode: referralCode,
                 ReferrerId: validationResult.Value.Id,
-                ReferredBy: $"{validationResult.Value.FirstName} {validationResult.Value.LastName.FirstOrDefault()}."
+                ReferrerName: $"{validationResult.Value.FirstName} {validationResult.Value.LastName.FirstOrDefault()}."
             )
         );
     }

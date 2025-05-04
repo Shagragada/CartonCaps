@@ -20,7 +20,7 @@ public record ReferralDetectionResponse(
     bool IsReferred,
     string? ReferralCode,
     int? ReferrerId,
-    string? ReferredBy
+    string? ReferrerName
 );
 
 public record CreateUserRequest(
