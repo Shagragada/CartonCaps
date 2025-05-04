@@ -2,7 +2,6 @@ using Ardalis.Result;
 using CartonCaps.Dtos;
 using CartonCaps.Enums;
 using CartonCaps.IServices;
-using CartonCaps.MessageTemplate;
 
 namespace CartonCaps.Services;
 
@@ -11,16 +10,19 @@ public class SharedLinkService : ISharedLinkService
     private readonly ILogger<SharedLinkService> _logger;
     private readonly IReferralService _referralService;
     private readonly IConfiguration _configuration;
+    private readonly ITemplateService _templateService;
 
     public SharedLinkService(
         ILogger<SharedLinkService> logger,
         IReferralService referralService,
-        IConfiguration configuration
+        IConfiguration configuration,
+        ITemplateService templateService
     )
     {
         _logger = logger;
         _referralService = referralService;
         _configuration = configuration;
+        _templateService = templateService;
     }
 
     public Result<SharedLinkResponse> GenerateSharedLink(OsPlatform osPlatform, string referralCode)
@@ -52,8 +54,8 @@ public class SharedLinkService : ISharedLinkService
             var referralLink = $"{baseUrl}?referral_code={referralCode}";
 
             // Generate SMS and Email messages using the referral link
-            var smsMessage = SmsTemplate.Create(referralLink);
-            var emailMessage = EmailTemplate.Create(referralLink);
+            var emailMessage = _templateService.CreateEmail(referralLink);
+            var smsMessage = _templateService.CreateSms(referralLink);
 
             return Result<SharedLinkResponse>.Success(
                 new SharedLinkResponse(referralLink, emailMessage, smsMessage)
