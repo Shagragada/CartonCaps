@@ -87,7 +87,7 @@ public class SharedLinkControllerTest
     public void DetectReferral_ReturnsNotFound_WhenCodeIsNullOrEmpty()
     {
         // Act
-        var result = _controller.DetectReferral("");
+        var result = _controller.DetectReferral(string.Empty);
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
