@@ -1,6 +1,5 @@
 using Ardalis.Result;
 using CartonCaps.Dtos;
-using CartonCaps.Enums;
 
 namespace CartonCaps.IServices;
 
