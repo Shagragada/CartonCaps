@@ -5,15 +5,14 @@ using CartonCaps.Models;
 
 namespace CartonCaps.Services;
 
+// Out of scope
 public class AccountService : IAccountService
 {
     private readonly IDataProvider _dataProvider;
-    private readonly IRedemptionService _redemptionService;
 
-    public AccountService(IDataProvider dataProvider, IRedemptionService redemptionService)
+    public AccountService(IDataProvider dataProvider)
     {
         _dataProvider = dataProvider;
-        _redemptionService = redemptionService;
     }
 
     public User? GetUserByReferralCode(string referralCode)
@@ -40,7 +39,25 @@ public class AccountService : IAccountService
         };
 
         _dataProvider.SaveUser(newUser);
-        _redemptionService.RedeemReferralCode(request.Email);
+        RedeemReferralCode(request.Email);
         return newUser;
+    }
+
+    // Out of scope
+    public bool RedeemReferralCode(string userEmail)
+    {
+        var email = _dataProvider
+            .GetCreatedAccounts()
+            .FirstOrDefault(r => r.Contains(userEmail, StringComparison.OrdinalIgnoreCase));
+
+        if (email == null)
+        {
+            //User is new, give reward
+            _dataProvider.AddEmailToCreaetedAccount(userEmail);
+            return true;
+        }
+
+        //User account was once created, deny reward
+        return false;
     }
 }

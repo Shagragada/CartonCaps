@@ -7,4 +7,5 @@ public interface IAccountService
 {
     User? GetUserByReferralCode(string referralCode);
     User CreateUser(CreateUserRequest request);
+    bool RedeemReferralCode(string userEmail);
 }
