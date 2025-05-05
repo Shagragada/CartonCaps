@@ -23,6 +23,7 @@ public class ReferralService : IReferralService
         _accountService = accountService;
     }
 
+    /// Retrieves a list of referrals made by the specified user.
     public Result<List<GetReferralResponse>> GetReferrals(int userId)
     {
         try
@@ -54,6 +55,7 @@ public class ReferralService : IReferralService
         }
     }
 
+    /// Validates the provided referral code by checking if it corresponds to an existing user.
     public Result<User> ValidateReferralCode(string referralCode)
     {
         try

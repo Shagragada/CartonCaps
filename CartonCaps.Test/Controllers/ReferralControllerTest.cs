@@ -40,14 +40,19 @@ public class ReferralControllerTests
     {
         // Arrange
         var userId = 1;
-        var referrals = new List<GetReferralResponse>
+        var expectedResult = new List<GetReferralResponse>
         {
-            new GetReferralResponse(1, "John D.", "Completed", DateTime.UtcNow),
+            new GetReferralResponse(
+                1,
+                "John D.",
+                ReferralStatus.Completed.ToString(),
+                DateTime.UtcNow
+            ),
         };
 
         _referralService
             .Setup(s => s.GetReferrals(userId))
-            .Returns(Result<List<GetReferralResponse>>.Success(referrals));
+            .Returns(Result<List<GetReferralResponse>>.Success(expectedResult));
 
         // Act
         var result = _controller.GetReferrals();
@@ -55,7 +60,7 @@ public class ReferralControllerTests
         // Assert
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
-        okResult!.Value.Should().BeEquivalentTo(referrals);
+        okResult!.Value.Should().BeEquivalentTo(expectedResult);
     }
 
     [Fact]

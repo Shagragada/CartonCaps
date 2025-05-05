@@ -18,7 +18,7 @@ public class SharedLinkServiceTest
     private readonly Mock<IReferralService> _referralService = new();
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<ILogger<SharedLinkService>> _logger = new();
-    private readonly Mock<ITemplateService> _templateService = new();
+    private readonly Mock<IMessageTemplateService> _templateService = new();
 
     public SharedLinkServiceTest()
     {
@@ -93,7 +93,7 @@ public class SharedLinkServiceTest
             .Returns("app://ios.livefront.com/referral");
 
         // Act
-        var result = _service.GenerateSharedLink(request, "");
+        var result = _service.GenerateSharedLink(request, string.Empty);
 
         // Assert
         result.IsSuccess.Should().BeFalse();

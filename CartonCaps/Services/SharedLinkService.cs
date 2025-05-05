@@ -10,13 +10,13 @@ public class SharedLinkService : ISharedLinkService
     private readonly ILogger<SharedLinkService> _logger;
     private readonly IReferralService _referralService;
     private readonly IConfiguration _configuration;
-    private readonly ITemplateService _templateService;
+    private readonly IMessageTemplateService _templateService;
 
     public SharedLinkService(
         ILogger<SharedLinkService> logger,
         IReferralService referralService,
         IConfiguration configuration,
-        ITemplateService templateService
+        IMessageTemplateService templateService
     )
     {
         _logger = logger;
@@ -25,6 +25,7 @@ public class SharedLinkService : ISharedLinkService
         _templateService = templateService;
     }
 
+    /// Generates a shared link based on the provided request and referral code.
     public Result<SharedLinkResponse> GenerateSharedLink(
         SharedLinkRequest sharedLinkRequest,
         string referralCode

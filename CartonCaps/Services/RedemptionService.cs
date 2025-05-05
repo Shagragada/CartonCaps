@@ -3,7 +3,9 @@ using CartonCaps.IServices;
 
 namespace CartonCaps.Services;
 
-// Out of scope
+/// Out of scope
+/// Out of scope
+/// Out of scope
 public class RedemptionService : IRedemptionService
 {
     private readonly IDataProvider _dataProvider;

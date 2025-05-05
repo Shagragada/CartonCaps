@@ -61,13 +61,14 @@ public class SharedLinkControllerTest
             OsPlatform.Web => "https://web.livefront.com/referral",
             _ => null,
         };
+        var referralCode = "REF123";
         var expectedResponse = new SharedLinkResponse(
-            $"{baseUrl}?referral_code=REF123",
+            $"{baseUrl}?referral_code={referralCode}",
             new SharedMessageTemplate("Subject", "Message")
         );
 
         _sharedLinkService
-            .Setup(s => s.GenerateSharedLink(request, "REF123"))
+            .Setup(s => s.GenerateSharedLink(request, referralCode))
             .Returns(Result<SharedLinkResponse>.Success(expectedResponse));
 
         // Act
@@ -96,6 +97,7 @@ public class SharedLinkControllerTest
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
         var badResult = result as BadRequestObjectResult;
+        badResult.Should().NotBeNull();
         badResult!.Value.Should().BeEquivalentTo(errors);
     }
 

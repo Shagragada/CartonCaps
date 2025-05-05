@@ -4,12 +4,12 @@ using HandlebarsDotNet;
 
 namespace CartonCaps.Services;
 
-public class TemplateService : ITemplateService
+public class MessageTemplateService : IMessageTemplateService
 {
     private readonly IHandlebars _handlebars;
     private readonly string _templateDirectory;
 
-    public TemplateService(string templateDirectory)
+    public MessageTemplateService(string templateDirectory)
     {
         _templateDirectory = templateDirectory;
         _handlebars = Handlebars.Create();
@@ -23,6 +23,8 @@ public class TemplateService : ITemplateService
         RegisterTemplate("EmailSubjectTemplate");
     }
 
+    // Registers a Handlebars template with the given name by reading
+    // its content from a file in the template directory.
     private void RegisterTemplate(string templateName)
     {
         var templatePath = Path.Combine(_templateDirectory, $"{templateName}.hbs");
@@ -30,6 +32,7 @@ public class TemplateService : ITemplateService
         _handlebars.RegisterTemplate(templateName, templateContent);
     }
 
+    // Creates an email message from handlebars template.
     public SharedMessageTemplate CreateEmail(string downloadUrl)
     {
         var bodyWriter = new StringWriter();
@@ -47,6 +50,7 @@ public class TemplateService : ITemplateService
         return new SharedMessageTemplate(subject: subject, body: body);
     }
 
+    // Creates an SMS message from handlebars template.
     public SharedMessageTemplate CreateSms(string downloadUrl)
     {
         var writer = new StringWriter();

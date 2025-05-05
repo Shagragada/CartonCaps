@@ -2,7 +2,7 @@ using CartonCaps.MessageTemplate;
 
 namespace CartonCaps.IServices;
 
-public interface ITemplateService
+public interface IMessageTemplateService
 {
     SharedMessageTemplate CreateEmail(string downloadUrl);
     SharedMessageTemplate CreateSms(string downloadUrl);
