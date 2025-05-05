@@ -59,7 +59,7 @@ and run the project
 $ dotnet run
 ```
 
-The application will be available on `http://localhost:5156`
+The application will be available on `http://localhost:5156`.
 Go to `http://localhost:5156/swagger/index.html` to view swagger documentation
 
 To run the test, go into the test project
